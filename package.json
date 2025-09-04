@@ -1,0 +1,35 @@
+{
+  "name": "name",
+  "description": "description",
+  "authors": "tkmate",
+  "version": "1.0.0",
+  "main": "pathToMain",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "build -w": "tsc --watch",
+    "start": "bun dist/app.js",
+    "start -w": "bun --watch dist/app.js",
+    "postman:generate": "openapi2postmanv2 -s src/openapi.yaml -o postman/HaliSahaProject.postman_collection.json -p -O folderStrategy=Tags"
+  },
+  "dependencies": {
+    "@types/uuid": "^10.0.0",
+    "bcrypt": "^6.0.0",
+    "chalk": "^5.6.0",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.2",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "express-async-handler": "^1.2.0",
+    "inversify": "^7.9.1",
+    "jose": "^6.0.12",
+    "mongoose": "^8.17.1",
+    "uuid": "^11.1.0"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
+    "@types/express": "^5.0.3",
+    "@types/node": "^24.3.0",
+    "openapi-to-postmanv2": "^4.20.0"
+  }
+}
