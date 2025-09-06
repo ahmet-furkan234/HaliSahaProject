@@ -2,16 +2,21 @@ import {
     ArrayMaxSize,
     ArrayMinSize,
     IsArray,
+    IsBoolean,
     IsEmail,
     IsIn,
     IsInt,
     IsNotEmpty,
     IsNumber,
     IsOptional,
+    IsPositive,
     IsString,
     IsUrl,
+    Length,
     Max,
+    MaxLength,
     Min,
+    MinLength,
     ValidateNested,
 } from "class-validator";
 import { Exclude, Expose, Type } from "class-transformer";
@@ -74,6 +79,61 @@ export interface IUpdateFacilityDto {
     coverImage?: string;
     images?: string[];
     features?: string[];
+}
+
+export interface IFacilityFilterDto {
+    name?: string;
+    city?: string;
+    district?: string;
+    features?: string[];
+    rating?: {
+        min?: number;
+        max?: number;
+    };
+}
+
+export class FacilityFilterDto implements IFacilityFilterDto {
+    @IsOptional()
+    @IsString({ message: "Tesis adı metin formatında olmalıdır" })
+    @Length(2, 50, { message: "Tesis adı 2-50 karakter arasında olmalıdır" })
+    name?: string;
+
+    @IsOptional()
+    @IsString({ message: "Şehir adı metin formatında olmalıdır" })
+    @Length(2, 30, { message: "Şehir adı 2-30 karakter arasında olmalıdır" })
+    city?: string;
+
+    @IsOptional()
+    @IsString({ message: "İlçe adı metin formatında olmalıdır" })
+    @Length(2, 30, { message: "İlçe adı 2-30 karakter arasında olmalıdır" })
+    district?: string;
+
+    @IsOptional()
+    @IsArray({ message: "Özellikler dizi formatında olmalıdır" })
+    @IsString({ each: true, message: "Her özellik metin formatında olmalıdır" })
+    features?: string[];
+
+    @IsOptional()
+    @ValidateNested()
+    @Type(() => FacilityRatingFilterDto)
+    rating?: {
+        min?: number;
+        max?: number;
+    };
+}
+
+export class FacilityRatingFilterDto {
+    @IsOptional()
+    @IsNumber({}, { message: "Minimum puan sayı formatında olmalıdır" })
+    @Min(0, { message: "Minimum puan 0'dan küçük olamaz" })
+    @Max(5, { message: "Minimum puan 5'ten büyük olamaz" })
+    min?: number;
+
+    @IsOptional()
+    @IsNumber({}, { message: "Maksimum puan sayı formatında olmalıdır" })
+    @Min(0, { message: "Maksimum puan 0'dan küçük olamaz" })
+    @Max(5, { message: "Maksimum puan 5'ten büyük olamaz" })
+    max?: number;
 }
 
 export class FacilitySocialMediaDto implements IFacilitySocialMediaDto {

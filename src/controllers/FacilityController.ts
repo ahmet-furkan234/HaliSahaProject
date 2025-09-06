@@ -3,6 +3,7 @@ import { inject, injectable } from "inversify";
 import { Request, Response } from "express";
 import TYPES from "../types.js";
 import { FacilityService } from "../services/facility.service.js";
+import { FacilityFilterDto } from "../dtos/facility.dto.js";
 
 @injectable()
 export class FacilityController {
@@ -13,8 +14,9 @@ export class FacilityController {
         return res.status(200).json(response);
     };
     
-    public getFacilitys = async (_req: Request, res: Response) => {
-        const response = await this.facilityService.getFacilities();
+    public getFacilitys = async (req: Request, res: Response) => {
+        const filters: FacilityFilterDto = req.query;
+        const response = await this.facilityService.getFacilities(filters);
         return res.status(200).json(response);
     };
 

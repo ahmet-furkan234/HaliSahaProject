@@ -2,8 +2,8 @@ import { ConflictException, NotFoundException } from "../utils/appError.js";
 import { CreateUserDto, UpdateUserDto, UserDto } from "../dtos/user.dto.js";
 
 import type { IGenericResponse } from "../base/IGenericResponse.js";
-import { IUser } from "../database/entities/user-interface.model.js";
 import type { IUserService } from "./user-service.interface.js";
+import UserModel from "../database/models/user.model.js";
 import bcrypt from "bcrypt";
 import { buildUpdateQuery } from "../utils/updateQueryBuilder.js";
 import { injectable } from "inversify";
@@ -13,7 +13,7 @@ import userModel from "../database/models/user.model.js";
 @injectable()
 export class UserService implements IUserService {
 
-    private userModel: typeof userModel
+    private userModel: typeof UserModel;
     constructor() {
         this.userModel = userModel;
     }

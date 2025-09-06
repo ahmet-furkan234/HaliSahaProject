@@ -1,5 +1,5 @@
 import { ConflictException, NotFoundException } from "../utils/appError.js";
-import { CreateFacilityDto, FacilityDto, UpdateFacilityDto } from "../dtos/facility.dto.js";
+import { CreateFacilityDto, FacilityDto, FacilityFilterDto, UpdateFacilityDto } from "../dtos/facility.dto.js";
 
 import { IFacilityService } from "./facility-service.interface.js";
 import { IGenericResponse } from "../base/IGenericResponse.js";
@@ -8,6 +8,7 @@ import { buildUpdateQuery } from "../utils/updateQueryBuilder.js";
 import facilityModel from "../database/models/facility.model.js";
 import featureModel from "../database/models/feature.model.js";
 import { injectable } from "inversify";
+import { mongo } from "mongoose";
 import { plainToInstance } from "class-transformer";
 
 @injectable()
@@ -42,8 +43,37 @@ export class FacilityService implements IFacilityService {
 
         return result;
     }
-    async getFacilities(): Promise<IGenericResponse<FacilityDto[]>> {
-        const facilities = await this.facilityModel.find().populate("features", "name");
+
+    async getFacilities(filter?: FacilityFilterDto): Promise<IGenericResponse<FacilityDto[]>> {
+        const mongoFilter: any = {};
+
+        if (filter?.name) {
+            mongoFilter.name = new RegExp(filter.name, "i");
+        }
+        
+        if (filter?.city) {
+            mongoFilter["location.city"] = new RegExp(filter.city, "i");
+        }
+        if (filter?.district) {
+            mongoFilter["location.district"] = new RegExp(filter.district, "i");
+        }
+        if (filter?.features) {
+            mongoFilter.features = { $all: filter.features };
+        }
+
+        if (filter?.rating?.min || filter?.rating?.max) {
+            mongoFilter["rating.average"] = {};
+
+            if (filter.rating.min != null) {
+                mongoFilter["rating.average"].$gte = filter.rating.min;
+            }
+
+            if (filter.rating.max != null) {
+                mongoFilter["rating.average"].$lte = filter.rating.max;
+            }
+        }
+
+        const facilities = await this.facilityModel.find(mongoFilter).populate("features", "name").collation({ locale: "tr", strength: 1 });
         if (facilities.length === 0) {
             throw new NotFoundException("Tesis bulunamadı");
         }
@@ -62,6 +92,7 @@ export class FacilityService implements IFacilityService {
 
         return result;
     }
+
     async getFacilityById(facilityId: string): Promise<IGenericResponse<FacilityDto>> {
         const facility = await this.facilityModel.findById(facilityId).populate("features", "name");;
         if (!facility) {
@@ -80,6 +111,7 @@ export class FacilityService implements IFacilityService {
 
         return result;
     }
+
     async updateFacility(facilityId: string, updateFacilityDto: PartialDeep<UpdateFacilityDto>): Promise<IGenericResponse<FacilityDto>> {
         if (updateFacilityDto.name !== undefined) {
             const exists = await this.facilityModel.findOne({ name: updateFacilityDto.name })

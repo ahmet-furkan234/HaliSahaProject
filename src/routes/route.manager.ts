@@ -2,6 +2,7 @@ import { Application } from "express";
 import AuthRoutes from "./auth.routes.js";
 import FacilityRoutes from "./facility.route.js";
 import { FeatureRoutes } from "./feature.routes.js";
+import PitchRoutes from "./pitch.routes.js";
 import RoleRoutes from "./role.routes.js";
 import UserRoutes from "./user.routes.js";
 
@@ -11,6 +12,7 @@ export class RouteManager {
     private roleRoutes: RoleRoutes;
     private featureRoutes: FeatureRoutes;
     private facilityRoutes: FacilityRoutes;
+    private pitchRoutes: PitchRoutes;
 
 
     constructor(app: Application) {
@@ -19,6 +21,7 @@ export class RouteManager {
         this.roleRoutes = new RoleRoutes();
         this.featureRoutes = new FeatureRoutes();
         this.facilityRoutes = new FacilityRoutes();
+        this.pitchRoutes = new PitchRoutes();
         this.initializeRoutes(app);
     }
 
@@ -28,6 +31,7 @@ export class RouteManager {
         app.use("/roles", this.roleRoutes.router);
         app.use("/features", this.featureRoutes.router);
         app.use("/facilities", this.facilityRoutes.router);
+        app.use("/pitches", this.pitchRoutes.router);
     }
 
     public getAuthRoutes(): AuthRoutes {
@@ -48,6 +52,10 @@ export class RouteManager {
 
     public getfacilityRoutes(): FacilityRoutes {
         return this.facilityRoutes;
+    }
+
+    public getPitchRoutes(): PitchRoutes {
+        return this.pitchRoutes;
     }
 }
 
