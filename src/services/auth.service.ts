@@ -15,16 +15,15 @@ export class AuthService implements IAuthService {
     }
 
     async login(loginDto: LoginDto): Promise<IGenericResponse<LoginResponse>> {
-
         const user = await this.userModel.findOne({ email: loginDto.email }).populate("RoleId");
-
-        if (!user)
+        if (!user) {
             throw new AuthorizationException("Geçersiz e-posta adresi veya şifre. Lütfen bilgilerinizi kontrol edip tekrar deneyiniz.");
+        }
 
         const passwordCheck = await bcrypt.compare(loginDto.password, user.password);
-
-        if (!passwordCheck)
+        if (!passwordCheck) {
             throw new AuthorizationException("Geçersiz e-posta adresi veya şifre. Lütfen bilgilerinizi kontrol edip tekrar deneyiniz.");
+        }
 
         const payload = {
             userId: user._id,
@@ -35,7 +34,6 @@ export class AuthService implements IAuthService {
         const rToken = await this.jwtService.generateToken({ sub: user._id }, '7d');
 
         await this.userModel.findByIdAndUpdate(user._id, { $set: { refreshToken: rToken } });
-
         const dto: LoginResponse = {
             bearerToken: bToken,
             refreshToken: rToken
@@ -51,21 +49,18 @@ export class AuthService implements IAuthService {
     }
 
     async refresh(refreshDto: RefreshDto): Promise<IGenericResponse<RefreshResponse>> {
-        const secret = new TextEncoder().encode(process.env.SECRET_KEY)
-
         const user = await this.userModel.findOne({ refreshToken: refreshDto.refreshToken }).populate("roleId");
-
-        if (!user) throw new AuthorizationException("Geçersiz refresh token");
+        if (!user) {
+            throw new AuthorizationException("Geçersiz refresh token");
+        }
 
         await this.jwtService.verifyToken(refreshDto.refreshToken);
 
-        const newBearerToken = await this.jwtService.generateToken({
-            sub: user._id,
-            role: user.roleId.name
-        }, '15m');
-
         const dto: RefreshResponse = {
-            bearerToken: newBearerToken
+            bearerToken: await this.jwtService.generateToken({
+                sub: user._id,
+                role: user.roleId.name
+            }, '15m')
         }
 
         const result: IGenericResponse<RefreshResponse> = {

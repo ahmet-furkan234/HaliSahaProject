@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
 import { inject, injectable } from "inversify";
-import RoleService from "../services/role.service.js";
 import TYPES from "../types.js";
+import { RoleService } from "../services/role.service.js";
 
 
 @injectable()
@@ -54,6 +54,3 @@ export class RoleController {
         return res.status(200).json(response);
     };
 }
-
-
-

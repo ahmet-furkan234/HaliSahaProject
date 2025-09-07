@@ -8,12 +8,10 @@ import { buildUpdateQuery } from "../utils/updateQueryBuilder.js";
 import facilityModel from "../database/models/facility.model.js";
 import featureModel from "../database/models/feature.model.js";
 import { injectable } from "inversify";
-import { mongo } from "mongoose";
 import { plainToInstance } from "class-transformer";
 
 @injectable()
 export class FacilityService implements IFacilityService {
-
     private facilityModel: typeof facilityModel;
     private featureModel: typeof featureModel;
     constructor() {
@@ -22,7 +20,8 @@ export class FacilityService implements IFacilityService {
     }
 
     async createFacility(createFacilityDto: CreateFacilityDto): Promise<IGenericResponse<FacilityDto>> {
-        if (await this.facilityModel.findOne({ name: createFacilityDto.name })) {
+        const exists = await this.facilityModel.findOne({ name: createFacilityDto.name });
+        if (exists) {
             throw new ConflictException("Bu tesis sistemde zaten kayıtlı");
         }
 
@@ -50,7 +49,7 @@ export class FacilityService implements IFacilityService {
         if (filter?.name) {
             mongoFilter.name = new RegExp(filter.name, "i");
         }
-        
+
         if (filter?.city) {
             mongoFilter["location.city"] = new RegExp(filter.city, "i");
         }
@@ -79,8 +78,7 @@ export class FacilityService implements IFacilityService {
         }
 
         for (const facility of facilities) {
-            const featureNames = facility.features.map((f: any) => f.name);
-            facility.features = featureNames;
+            facility.features = facility.features.map((f: any) => f.name);
         }
 
         const dto = facilities.map(f => plainToInstance(FacilityDto, f.toObject()));
@@ -99,8 +97,7 @@ export class FacilityService implements IFacilityService {
             throw new NotFoundException("Tesis bulunamadı");
         }
 
-        const featureNames = facility.features.map((f: any) => f.name);
-        facility.features = featureNames;
+        facility.features = facility.features.map((f: any) => f.name);
 
         const dto = plainToInstance(FacilityDto, facility.toObject());
         const result: IGenericResponse<FacilityDto> = {
@@ -124,7 +121,9 @@ export class FacilityService implements IFacilityService {
             const validFeatures: string[] = [];
             for (const id of updateFacilityDto.features || []) {
                 const exists = await this.featureModel.findById(id);
-                if (exists) validFeatures.push(exists._id);
+                if (exists) {
+                    validFeatures.push(exists._id);
+                }
             }
             updateFacilityDto.features = validFeatures;
         }
@@ -150,8 +149,7 @@ export class FacilityService implements IFacilityService {
             throw new NotFoundException("Tesis bulunamadı");
         }
 
-        const featureNames = deleted.features.map((f: any) => f.name);
-        deleted.features = featureNames;
+        deleted.features  = deleted.features.map((f: any) => f.name);
 
         const dto = plainToInstance(FacilityDto, deleted.toObject());
         const result: IGenericResponse<FacilityDto> = {

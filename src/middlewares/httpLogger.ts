@@ -11,5 +11,3 @@ export const httpLogger = (req: Request, res: Response, next: NextFunction) => {
   }); // res'teki finish eventini yakalayınca çalışacak
   next();
 };
-
-

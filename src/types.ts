@@ -13,5 +13,4 @@ const TYPES = {
     FacilityController: Symbol.for("FacilityController"),
     PitchController: Symbol.for("PitchController"),
 };
-
 export default TYPES;

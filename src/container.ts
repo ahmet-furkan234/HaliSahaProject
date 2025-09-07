@@ -16,10 +16,10 @@ import { JwtService } from "./services/jwt.service.js";
 import { PitchController } from "./controllers/PitchController.js";
 import { PitchService } from "./services/pitch.service.js";
 import { RoleController } from "./controllers/RoleController.js";
-import RoleService from "./services/role.service.js";
+import { RoleService } from "./services/role.service.js";
 import TYPES from "./types.js";
 import { UserController } from "./controllers/UserController.js";
-import UserService from "./services/user.service.js";
+import { UserService } from "./services/user.service.js";
 
 const container = new Container();
 

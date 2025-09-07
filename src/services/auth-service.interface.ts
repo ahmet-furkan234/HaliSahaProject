@@ -3,6 +3,6 @@ import { LoginDto, LoginResponse, RefreshDto, RefreshResponse } from "../dtos/au
 import { IGenericResponse } from "../base/IGenericResponse";
 
 export interface IAuthService {
-    login(loginDto : LoginDto) : Promise<IGenericResponse<LoginResponse>>
-    refresh(refreshDto : RefreshDto) : Promise<IGenericResponse<RefreshResponse>>
-} 
+    login(loginDto: LoginDto): Promise<IGenericResponse<LoginResponse>>
+    refresh(refreshDto: RefreshDto): Promise<IGenericResponse<RefreshResponse>>
+}

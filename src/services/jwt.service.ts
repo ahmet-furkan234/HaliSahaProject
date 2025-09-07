@@ -6,12 +6,14 @@ import { IJwtService } from "./jwt-service.interface.js";
 export class JwtService implements IJwtService {
     async generateToken(payload: any, time: string): Promise<string> {
         const secret = new TextEncoder().encode(process.env.SECRET_KEY);
+        
         return new SignJWT(payload)
             .setProtectedHeader({ alg: 'HS256' })
             .setIssuedAt()
             .setExpirationTime(time)
             .sign(secret);
     }
+    
     async verifyToken(token: string) {
         try {
             const secret = new TextEncoder().encode(process.env.SECRET_KEY);

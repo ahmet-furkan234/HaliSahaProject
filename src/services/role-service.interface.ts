@@ -12,5 +12,3 @@ export interface IRoleService {
     assignRole(assignRoleDto: AssignRoleDto): Promise<IGenericResponse<null>>;
     unassingRole(unassignRoleDto: UnassignRoleDto): Promise<IGenericResponse<null>>;
 }
-
-
